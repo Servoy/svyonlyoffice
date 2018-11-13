@@ -75,14 +75,13 @@ function getDocFileType(mime_type) {
 /**
  * @protected
  *
- * TODO generated, please specify type and doc for the params
- * @param file_type
+ * @param f_type
  *
  * @properties={typeid:24,uuid:"7BF7FA3F-1408-4655-86A3-A9CEBF68854F"}
  */
-function getDocType(file_type) {
+function getDocType(f_type) {
 	var doc_type;
-	switch (file_type) {
+	switch (f_type) {
 	case 'text/plain':
 		doc_type = 'text';
 		break;

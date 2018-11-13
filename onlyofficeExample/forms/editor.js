@@ -27,10 +27,10 @@ function cbOnLoad(data) {
  * @properties={typeid:24,uuid:"E6BF42E8-AAB8-4C3D-890E-2AFC242155E8"}
  */
 function load(remoteFileName, remoteUrl, doc_type, doc_file_type, key) {
-//	application.output(remoteFileName)
-//	application.output(remoteUrl)
-//	application.output(doc_type)
-//	application.output(doc_file_type)
+	//	application.output(remoteFileName)
+	//	application.output(remoteUrl)
+	//	application.output(doc_type)
+	//	application.output(doc_file_type)
 	if (doc_type == 'not_supported') {
 		return plugins.dialogs.showInfoDialog('INFO', 'File type not supported.')
 	}
@@ -39,7 +39,7 @@ function load(remoteFileName, remoteUrl, doc_type, doc_file_type, key) {
 	}
 	var cb_url = scopes.onlyoffice.servoyMGMServer;
 	elements.editor.destroy(); //if there's a document open, first close it.
-	
+
 	//then load the document
 	elements.editor.load({
 			"document": {
@@ -106,10 +106,7 @@ function load(remoteFileName, remoteUrl, doc_type, doc_file_type, key) {
  */
 function onLoad(event) {
 	//initialize editor
-	try {
-		elements.editor.init(scopes.onlyoffice.docServerJS);
-	} catch (e) {
-	}
+	elements.editor.init(scopes.onlyoffice.docServerJS);
 }
 
 /**
