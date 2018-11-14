@@ -27,10 +27,10 @@ function cbOnLoad(data) {
  * @properties={typeid:24,uuid:"E6BF42E8-AAB8-4C3D-890E-2AFC242155E8"}
  */
 function load(remoteFileName, remoteUrl, doc_type, doc_file_type, key) {
-	//	application.output(remoteFileName)
-	//	application.output(remoteUrl)
-	//	application.output(doc_type)
-	//	application.output(doc_file_type)
+//		application.output(remoteFileName)
+//		application.output(remoteUrl)
+//		application.output(doc_type)
+//		application.output(doc_file_type)
 	if (doc_type == 'not_supported') {
 		return plugins.dialogs.showInfoDialog('INFO', 'File type not supported.')
 	}
@@ -63,11 +63,11 @@ function load(remoteFileName, remoteUrl, doc_type, doc_file_type, key) {
 				"customization": {
 					"autosave": true,
 					"chat": false,
-					"commentAuthorOnly": true,
+					"commentAuthorOnly": false,
 					"toolbar": true,
 					"header": false,
 					"compactToolbar": true,
-					"comments": true,
+					"comments": false,
 					"customer": {
 						"address": "",
 						"info": "",
