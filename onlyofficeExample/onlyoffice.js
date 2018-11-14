@@ -11,7 +11,7 @@ var docServerJS = 'http://192.168.192.131/web-apps/apps/api/documents/api.js';
  * @properties={typeid:35,uuid:"F4A17B0E-AB65-4AB8-9F6A-658BF2544E58"}
  */
 var conversionAPI = "http://192.168.192.131/ConvertService.ashx"
-	
+
 /**
  * @type {String}
  * REST Endpoint that manages documents
@@ -35,7 +35,9 @@ function onSolutionOpen(arg, queryParams) {
 		servoyMGMServer = application.getServerURL() + '/servoy-service/rest_ws/ws/mgm';
 	}
 	plugins.ngclientutils.setViewportMetaForMobileAwareSites(plugins.ngclientutils.VIEWPORT_MOBILE_DEFAULT)
-	//	var fs = datasources.db.onlyoffice.files.getFoundSet();fs.loadAllRecords();fs.deleteAllRecords();
+//	var fs = datasources.db.onlyoffice.files.getFoundSet();
+//	fs.loadAllRecords();
+//	fs.deleteAllRecords();
 }
 
 /**
@@ -66,7 +68,7 @@ function convert(file_type, outputtype, key, title, url) {
 		application.showURL(r.fileUrl);
 	} else {
 		plugins.svyBlockUI.stop();
-		plugins.dialogs.showInfoDialog('INFO','Conversion failed..Did you pick the correct output type?')
+		plugins.dialogs.showInfoDialog('INFO', 'Conversion failed..Did you pick the correct output type?')
 	}
 	plugins.svyBlockUI.stop();
 	return e.getStatusCode();
