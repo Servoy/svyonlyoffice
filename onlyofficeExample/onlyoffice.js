@@ -15,9 +15,17 @@ var conversionAPI = "http://192.168.192.131/ConvertService.ashx"
 /**
  * @type {String}
  * REST Endpoint that manages documents
+ * IMPORTANT: If testing with developer, make sure ip address is pointed to local ipaddress and not localhost
  * @properties={typeid:35,uuid:"FD1B9AA6-5259-4F53-A43B-1CB15E10DFF0"}
  */
-var servoyMGMServer = 'http://192.168.86.200:8080/servoy-service/rest_ws/ws/mgm';
+var servoyMGMServer = 'http://localhost:8080/servoy-service/rest_ws/ws/mgm';
+
+/**
+ * @type {String}
+ * IMPORTANT: Change to your local dev ip address
+ * @properties={typeid:35,uuid:"81975EEC-A244-4E28-AC77-20E9D9872987"}
+ */
+var devURL = '192.168.192.133';
 
 /**
  * Callback method for when solution is opened.
@@ -33,11 +41,37 @@ var servoyMGMServer = 'http://192.168.86.200:8080/servoy-service/rest_ws/ws/mgm'
 function onSolutionOpen(arg, queryParams) {
 	if (!application.isInDeveloper()) {
 		servoyMGMServer = application.getServerURL() + '/servoy-service/rest_ws/ws/mgm';
-	}
+	} else {
+		devURL = java.net.InetAddress.getLocalHost().getHostAddress();
+		//override localhost and use ip address of developer
+		servoyMGMServer = 'http://' + devURL + ':' + application.getServerURL().split(':')[2] + 'servoy-service/rest_ws/ws/mgm'
+	}	
 	plugins.ngclientutils.setViewportMetaForMobileAwareSites(plugins.ngclientutils.VIEWPORT_MOBILE_DEFAULT)
-//	var fs = datasources.db.onlyoffice.files.getFoundSet();
-//	fs.loadAllRecords();
-//	fs.deleteAllRecords();
+}
+
+/**
+ * @param {JSRecord<db:/onlyoffice/files>} record
+ * @properties={typeid:24,uuid:"09D2CF0D-5B60-4355-B61A-EC724D838248"}
+ */
+function getRemoteUrl(record) {
+	var remoteFileName = record.file_sname;
+	var bytes = record.file_data;
+	var file = plugins.file.createFile(plugins.file.getDefaultUploadLocation() + '/' + remoteFileName);
+	if (!file.exists()) {
+		file.createNewFile();
+		file.setBytes(bytes);
+	}
+
+	var remoteFile = plugins.file.convertToRemoteJSFile('/' + remoteFileName);
+	remoteFile.setBytes(bytes, true);
+	var remoteUrl = plugins.file.getUrlForRemoteFile('/' + remoteFileName);
+	if (application.isInDeveloper()) {
+		remoteUrl = remoteUrl.replace('localhost', devURL);
+	}
+	return {
+		url: remoteUrl,
+		name: remoteFileName
+	}
 }
 
 /**
@@ -46,9 +80,6 @@ function onSolutionOpen(arg, queryParams) {
  * @properties={typeid:24,uuid:"369E8DF8-94FA-4774-AD55-AD1D4B3F3932"}
  */
 function convert(file_type, outputtype, key, title, url) {
-	if (application.isInDeveloper()) {
-		url = url.replace('localhost', '192.168.86.200');
-	}
 	var data = {
 		"async": false,
 		"filetype": file_type,

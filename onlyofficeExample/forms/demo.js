@@ -6,9 +6,7 @@
 var user_name = '';
 
 /**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"D1590203-544B-49F5-B060-0A4D04DFC47E"}
+ * @properties={typeid:35,uuid:"F67DD9E9-750D-4925-82C3-3BC1B72A0917",variableType:-4}
  */
 var dp;
 
@@ -38,12 +36,14 @@ var dp_mimetype;
  * @properties={typeid:24,uuid:"BEFF0E57-2298-4AC1-8569-06AF111C819E"}
  */
 function onDataChange(oldValue, newValue, event) {
+	var f = plugins.file.createFile(dp_filename);
+	f.setBytes(newValue, true)
 	var fs = datasources.db.onlyoffice.files.getFoundSet();
 	fs.newRecord();
 	fs.file_id = application.getUUID();
 	fs.file_sname = utils.stringReplace(application.getUUID().toString(), '-', '') + '.' + dp_filename.split('.')[1]
 	fs.file_name = dp_filename;
-	fs.file_type = dp_mimetype;
+	fs.file_type = f.getContentType();
 	fs.file_data = newValue;
 	databaseManager.saveData(fs);
 	return false;
@@ -157,20 +157,10 @@ function getDocType(f_type) {
 function openFile(foundsetindex, columnindex, record, event) {
 	if (!record) return null;
 	//Create a real link to file and get a remote URL
-	var remoteFileName = record.file_sname;
-	var bytes = record.file_data;
-	var file = plugins.file.createFile(plugins.file.getDefaultUploadLocation() + '/' + remoteFileName);
-	if (!file.exists()) {
-		file.createNewFile();
-		file.setBytes(bytes);
-	}
-
-	var remoteFile = plugins.file.convertToRemoteJSFile('/' + remoteFileName);
-	remoteFile.setBytes(bytes, true);
-	var remoteUrl = plugins.file.getUrlForRemoteFile('/' + remoteFileName);
+	var u = scopes.onlyoffice.getRemoteUrl(record);
 	elements.title.text = record.file_name;
 	hideFileManager();
-	return forms.editor.load(remoteFileName, remoteUrl, getDocType(record.file_type), getDocFileType(record.file_type), record.file_key);
+	return forms.editor.load(u.name, u.url, getDocType(record.file_type), getDocFileType(record.file_type), record.file_key);
 }
 
 /**
@@ -240,19 +230,8 @@ function onCellClick(foundsetindex, columnindex, record, event) {
 		var out = plugins.dialogs.showSelectDialog('INFO', 'Select File Output', getConvertOutOptions(record.file_name.split('.')[1]))
 		if (out) {
 			plugins.svyBlockUI.spinner = 'Chasing dots';
-			plugins.svyBlockUI.show('Converting...')
-			var remoteFileName = record.file_sname;
-			var bytes = record.file_data;
-			var file = plugins.file.createFile(plugins.file.getDefaultUploadLocation() + '/' + remoteFileName);
-			if (!file.exists()) {
-				file.createNewFile();
-				file.setBytes(bytes);
-			}
-
-			var remoteFile = plugins.file.convertToRemoteJSFile('/' + remoteFileName);
-			remoteFile.setBytes(bytes, true);
-			var remoteUrl = plugins.file.getUrlForRemoteFile('/' + remoteFileName);
-			scopes.onlyoffice.convert(record.file_name.split('.')[1], out, record.file_key, record.file_name, remoteUrl);
+			plugins.svyBlockUI.show('Converting...');
+			scopes.onlyoffice.convert(record.file_name.split('.')[1], out, record.file_key, record.file_name, scopes.onlyoffice.getRemoteUrl(record).url);
 		}
 	}
 	if (columnindex == 2) {
@@ -263,6 +242,7 @@ function onCellClick(foundsetindex, columnindex, record, event) {
 
 /**
  * @param input
+ * TODO: Add support for other file types
  *
  * @properties={typeid:24,uuid:"E678ED61-87E9-4F0E-A50C-94848F225677"}
  */
