@@ -1,13 +1,14 @@
 /**
  * @type {String}
  * Document Server Component Library JS
+ * IMPORTANT: Must change IP address to point your local installation of document server
  * @properties={typeid:35,uuid:"BC701453-C52E-4607-84A8-FED0518EC3DC"}
  */
 var docServerJS = 'http://192.168.192.131/web-apps/apps/api/documents/api.js';
 
 /**
  * @type {String}
- *
+ * Must change IP address to point your local installation of document server
  * @properties={typeid:35,uuid:"F4A17B0E-AB65-4AB8-9F6A-658BF2544E58"}
  */
 var conversionAPI = "http://192.168.192.131/ConvertService.ashx"
@@ -18,14 +19,14 @@ var conversionAPI = "http://192.168.192.131/ConvertService.ashx"
  * IMPORTANT: If testing with developer, make sure ip address is pointed to local ipaddress and not localhost
  * @properties={typeid:35,uuid:"FD1B9AA6-5259-4F53-A43B-1CB15E10DFF0"}
  */
-var servoyMGMServer = 'http://localhost:8080/servoy-service/rest_ws/ws/mgm';
+var servoyMGMServer = '';
 
 /**
  * @type {String}
  * IMPORTANT: Change to your local dev ip address
  * @properties={typeid:35,uuid:"81975EEC-A244-4E28-AC77-20E9D9872987"}
  */
-var devURL = '192.168.192.133';
+var devURL = '';
 
 /**
  * Callback method for when solution is opened.
@@ -42,10 +43,14 @@ function onSolutionOpen(arg, queryParams) {
 	if (!application.isInDeveloper()) {
 		servoyMGMServer = application.getServerURL() + '/servoy-service/rest_ws/ws/mgm';
 	} else {
-		devURL = java.net.InetAddress.getLocalHost().getHostAddress();
-		//override localhost and use ip address of developer
+		//try to get local IP address instead of using localhost
+		var s = new java.net.Socket('google.com', 80);
+		devURL = s.getLocalAddress().getHostAddress();
+
+		//update local rest endpoint
 		servoyMGMServer = 'http://' + devURL + ':' + application.getServerURL().split(':')[2] + 'servoy-service/rest_ws/ws/mgm'
-	}	
+	}
+	application.output(devURL)
 	plugins.ngclientutils.setViewportMetaForMobileAwareSites(plugins.ngclientutils.VIEWPORT_MOBILE_DEFAULT)
 }
 
